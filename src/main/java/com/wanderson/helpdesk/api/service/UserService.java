@@ -10,7 +10,7 @@ public interface UserService {
 
     User createOrUpdate(User user);
 
-    Optional<User> findById(String id);
+    User findById(String id);
 
     void delete(User user);
 
