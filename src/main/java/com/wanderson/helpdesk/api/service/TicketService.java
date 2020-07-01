@@ -25,7 +25,7 @@ public interface TicketService {
 
     Page<Ticket> findByParameters(int page, int count, String title, String status, String priority);
 
-    Page<Ticket> findByParametersAndCurrentUser(int page, int count, String title, String status, String priority);
+    Page<Ticket> findByParametersAndCurrentUser(int page, int count, String title, String status, String priority, String userId);
 
     Page<Ticket> findByNumber(int page, int count, Integer number);
 

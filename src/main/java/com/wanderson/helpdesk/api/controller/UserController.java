@@ -14,6 +14,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -38,7 +39,7 @@ public class UserController {
             }
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             User userPersisted = (User) userService.createOrUpdate(user);
-            response.setData(userPersisted);
+            response.setData(Optional.ofNullable(userPersisted));
         } catch (DuplicateKeyException duplicateKeyException){
             response.getErrors().add("E-mail already registered !");
             return ResponseEntity.badRequest().body(response);
@@ -67,7 +68,7 @@ public class UserController {
             }
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             User userPersisted = (User) userService.createOrUpdate(user);
-            response.setData(userPersisted);
+            response.setData(Optional.ofNullable(userPersisted));
         } catch (Exception e){
             response.getErrors().add(e.getMessage());
             return ResponseEntity.badRequest().body(response);
@@ -88,7 +89,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Response<User>> findById(@PathVariable("id") String id){
         Response<User> response = new Response<User>();
-        User user = userService.findById(id);
+        Optional<User> user = userService.findById(id);
         if(user == null){
             response.getErrors().add("Register not found id: "+id);
             return ResponseEntity.badRequest().body(response);
@@ -101,12 +102,12 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Response<String>> delete(@PathVariable("id") String id){
         Response<String> response = new Response<String>();
-        User user = userService.findById(id);
+        Optional<User> user = userService.findById(id);
         if(user == null){
             response.getErrors().add("Register not found id: "+id);
             return ResponseEntity.badRequest().body(response);
         }
-        userService.delete(user);
+        userService.delete(user.get());
         return ResponseEntity.ok(new Response<String>());
     }
 
@@ -115,7 +116,7 @@ public class UserController {
     public ResponseEntity<Response<Page<User>>> findAll(@PathVariable int page, @PathVariable int count){
         Response<Page<User>> response = new Response<Page<User>>();
         Page<User> users = userService.findAll(page, count);
-        response.setData(users);
+        response.setData(Optional.ofNullable(users));
         return ResponseEntity.ok(response);
     }
 
